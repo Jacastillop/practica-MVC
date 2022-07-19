@@ -10,7 +10,7 @@
 
     self.Board.prototype = {
         get element() {
-            var elements = this.bars;
+            var elements = this.bars.map(function(bar){return bar;});
             elements.push(this.ball);
             return elements;
         },
@@ -108,19 +108,15 @@ Document,
         event.preventDefault();
         if (event.keyCode == 38) {
             bar.up();
-            console.log(bar + "");
         }
         if (event.keyCode == 40) {
             bar.down();
-            console.log(bar + "");
         }
         if (event.keyCode == 87) {
             bar_2.up();
-            console.log(bar_2 + "");
         }
         if (event.keyCode == 83) {
             bar_2.down();
-            console.log(bar_2 + "");
         }
     });
 
