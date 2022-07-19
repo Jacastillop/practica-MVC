@@ -6,11 +6,12 @@
         this.game_over = false;
         this.bars = [];
         this.ball = null;
+        this.playing = false;
     };
 
     self.Board.prototype = {
         get element() {
-            var elements = this.bars.map(function(bar){return bar;});
+            var elements = this.bars.map(function (bar) { return bar; });
             elements.push(this.ball);
             return elements;
         },
@@ -23,11 +24,19 @@
         this.y = y;
         this.radius = radius;
         this.board = board;
-        this.speed_x = 0;
+        this.speed_x = 5;
         this.speed_y = 0;
-        this.kind="circle"
-        board.ball=this;
-    };
+        this.kind = "circle"
+        this.direction = 1;
+        board.ball = this;
+    }
+
+    self.Ball.prototype = {
+        move: function () {
+            this.x += (this.speed_x * this.direction);
+            this.y += (this.speed_y);
+        }
+    }
 })();
 
 (function () {
@@ -75,8 +84,11 @@
             }
         },
         play: function () {
-            this.clean();
-            this.draw();
+            if (this.board.playing) {
+                this.clean();
+                this.draw();
+                this.board.ball.move();
+            }
         },
     };
 
@@ -87,7 +99,7 @@
                 break;
             case "circle":
                 ctx.beginPath();
-                ctx.arc(element.x,element.y,element.radius,0,7);
+                ctx.arc(element.x, element.y, element.radius, 0, 7);
                 ctx.fill();
                 ctx.closePath();
                 break;
@@ -99,27 +111,36 @@
 var board = new Board(800, 400);
 var bar = new Bar(20, 100, 40, 100, board);
 var bar_2 = new Bar(740, 100, 40, 100, board);
-var ball = new Ball(350,100,10,board);
+var ball = new Ball(350, 100, 10, board);
 var canvas = document.getElementById("canvas");
 var board_view = new BoardView(canvas, board);
 
 Document,
     addEventListener("keydown", function (event) {
-        event.preventDefault();
-        if (event.keyCode == 38) {
+
+        if (event.keyCode === 38) {
+            event.preventDefault();
             bar.up();
         }
-        if (event.keyCode == 40) {
+        else if (event.keyCode === 40) {
+            event.preventDefault();
             bar.down();
         }
-        if (event.keyCode == 87) {
+        else if (event.keyCode === 87) {
+            event.preventDefault();
             bar_2.up();
         }
-        if (event.keyCode == 83) {
+        else if (event.keyCode === 83) {
+            event.preventDefault();
             bar_2.down();
+        }
+        else if (event.keyCode === 32) {
+            event.preventDefault();
+            board.playing = !board.playing;
         }
     });
 
+board_view.draw();
 window.requestAnimationFrame(controller);
 
 function controller() {
